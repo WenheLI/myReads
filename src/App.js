@@ -7,8 +7,7 @@ import SearchBooks from "./SearchBooks";
 
 class BooksApp extends React.Component {
     state = {
-        books:[],
-        searchBooks: []
+        books:[]
   };
 
     updateShelf = () => {
@@ -24,20 +23,14 @@ class BooksApp extends React.Component {
 
     changeBookShelf = (id, target) => {
         this.setState((pState) => {
-            pState.books.filter((it) => it.id === id).map((it) => it.shelf = target);
+            if (Array.isArray(pState))
+                pState.books.filter((it) => it.id === id).map((it) => it.shelf = target);
             return {books: pState.books};
         })
     };
 
-    onSearch = (q) => {
-      BooksAPI.search(q).then((it) => {
-          this.setState({searchBooks: it})
-      })
-    };
-
     resetBooks = () => {
         this.updateShelf();
-        this.setState({searchBooks: []});
     };
   render() {
     return (
@@ -45,10 +38,9 @@ class BooksApp extends React.Component {
           <Route path="/search" render={({ history }) => (
             <SearchBooks history={history}
                          chosenBooks={this.state.books}
-                        onSearch={this.onSearch}
                          onShelfChanged={this.changeBookShelf}
                          resetBooks={this.resetBooks}
-                        books={this.state.searchBooks}/>
+                        />
           )}>
           </Route>
 

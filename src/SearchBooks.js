@@ -1,7 +1,21 @@
 import React, {Component} from "react";
 import Shelf from "./Shelf";
+import * as BooksAPI from "./BooksAPI";
+import debounce from "lodash.debounce";
 
 class SearchBooks extends Component{
+
+    state = {
+        searchBooks: []
+    };
+
+    onSearch = (q) => {
+        BooksAPI.search(q).then((it) => {
+                this.setState({searchBooks: it})
+        })
+    };
+
+    debounceOnSearch = debounce(this.onSearch, 150);
 
 
     render() {
@@ -11,17 +25,15 @@ class SearchBooks extends Component{
                     <a className="close-search" onClick={() => {
                                                 this.props.history.push("/");
                                                  this.props.resetBooks();
+                                                 this.setState({searchState: []});
                                                 }}>Close</a>
                     <div className="search-books-input-wrapper">
                         <input type="text" placeholder="Search by title or author"
-                                onChange={(e) => {
-                                    console.log(e.target.value);
-                                    this.props.onSearch(e.target.value);
-                                }}/>
+                                onChange={(e) => {this.debounceOnSearch(e.target.value)}}/>
                     </div>
                 </div>
                 <div className="search-books-results">
-                    <Shelf chosenBooks={this.props.chosenBooks} books={this.props.books} category="" onShelfChanged={this.props.onShelfChanged}/>
+                    <Shelf chosenBooks={this.props.chosenBooks} books={this.state.searchBooks} category="" onShelfChanged={this.props.onShelfChanged}/>
                 </div>
             </div>
         )
